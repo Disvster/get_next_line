@@ -13,7 +13,7 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE	20
+# define BUFFER_SIZE	3
 #endif
 
 # include <stdlib.h>
@@ -21,6 +21,9 @@
 # include <fcntl.h>
 
 char	*get_next_line(int fd);
-size_t	ft_strnstr_len(const char *big, const char *little, size_t len);
+size_t	ft_strlen(const char *s);
+char	*ft_strdup(const char *src);
+char	*ft_strjoin(char const *s1, char const *s2);
+void	*ft_calloc(size_t nmemb, size_t size);
 
 #endif

@@ -12,25 +12,87 @@
 
 #include "get_next_line.h"
 
-size_t	ft_strnstr_len(const char *big, const char *little, size_t len)
+size_t	ft_strlen(const char *s)
 {
 	size_t	i;
-	size_t	j;
 
-	if (!big && !little)
-		return (-1);
-	i = 0;
-	j = 0;
-	if (little[j] == '\0')
+	if (!s)
 		return (0);
-	while (i < len && big[i])
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
+
+char	*ft_strdup(const char *s)
+{
+	char	*dup;
+	size_t	i;	
+	size_t	len;
+
+	i = 0;
+	len = ft_strlen(s);
+	dup = (char *)malloc(sizeof(char) * (len + 1));
+	if (!dup)
+		return (NULL);
+	while (s[i])
 	{
-		while (big[i + j] == little[j] && big[i + j] && (i + j) < len)
-			j++;
-		if (little[j] == '\0')
-			return (i);
-		j = 0;
+		dup[i] = s[i];
 		i++;
 	}
-	return (0);
+	dup[i] = '\0';
+	return (dup);
+}
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	size_t	i;
+	size_t	ltotal;
+	char	*scat;
+
+	if (!s1)
+		return (0);
+	ltotal = ft_strlen(s1) + ft_strlen(s2);
+	scat = (char *)malloc(sizeof(char) * (ltotal + 1));
+	if (!scat)
+		return (NULL);
+	i = 0;
+	while (i < ft_strlen(s1))
+	{
+		scat[i] = s1[i];
+		i++;
+	}
+	while (i < ltotal)
+	{
+		scat[i] = s2[i - ft_strlen(s1)];
+		i++;
+	}
+	scat[i] = '\0';
+	return (scat);
+}
+
+void	ft_bzero(void *s, size_t n)
+{
+	unsigned char	*p_s;
+	size_t			i;
+
+	i = 0;
+	p_s = s;
+	while (i < n)
+		p_s[i++] = '\0';
+}
+
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	void	*arr;
+	size_t	mult;
+
+	if (nmemb != 0 && size != 0 && (nmemb > ((size_t)-1 / size)))
+		return (NULL);
+	mult = nmemb * size;
+	arr = malloc(nmemb * size);
+	if (!arr)
+		return (NULL);
+	ft_bzero(arr, mult);
+	return (arr);
 }

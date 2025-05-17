@@ -12,49 +12,84 @@
 
 #include "get_next_line.h"
 
-size_t	ft_strnlen(char *s, size_t n)
+int	find_line(char s)
 {
-	size_t	i;
-
-	i = 0;
-	if (!s)
-		return (0);
-	if (n == 0)
-	{
-		while (s[i])
-			i++;
-		return (i);
-	}
-	while (i < n && s[i] && s[i] != '\n')
-		i++;
-	return (i);
+	if (s == '\n')
+			return (1);
+	return (0);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stash; // stashing the strings being read
-	static char	*line; // the line we want to return
-	char		*buffer;
-	int			i;
-	int			len;
+	static char	*stash[1024]; // stashing the strings being read
+	char		*line;
+	char		*tmp;
+
+	// tenho que alocar memoria para stash * BUFFER_SIZE 
+	// dar lhe o que ta no read * BUFFER_SIZE 
+	// strdup de stash -> line
+	// se line na ultima posicao for newline -> return (line)
+	// senao -> strjoin do proximo read para stash[fd]
+	// volta ao inicio do loop;
+	// 
+	// stash comeca com tamanho de buffer_size
+	// e lhe aplicado o read
+	// stash e copiado para line
+	// line so se devolve se encontrarmos linha ou EOF (read == 0)
+	// senao adiciona-se mais memoria a stash * BUFFER_SIZE 
+	// e continua o processo mas stash agora recebe um join do result do read
+	//
+	// se encontramos a newline ou o EOF antes da memoria total alocada
+	// temos de dar free a memoria que foi alocada mas nao utilizada
+	// e so depois return (line)
+	// so damos free a stash[fd] quando EOF is reached
 
 	if (fd < 0)
 		return (NULL);
-	i = 0;
-	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	read(fd, buffer, BUFFER_SIZE);
-	i = ft_strnlen(line, 0);
-	len = ft_strnlen(buffer + i, BUFFER_SIZE);
-	line = malloc(sizeof(char) * (len + 1));
-	i = 0;
-	while (*line && *line != '\n'
-	while (buffer[i] != '\n' || buffer[i] != -1);
-	return (buffer);
+	if (!stash[fd])
+	 	stash[fd] = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
+	// if (!stash[fd])
+	// 	return (NULL);
+	line = NULL;
+	tmp = NULL;
+	while (1)
+	{
+		if (!stash[fd])
+			tmp = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
+		if (!stash[fd] || read(fd, stash[fd], BUFFER_SIZE) == -1)
+			return (NULL);
+		stash[fd] = ft_strjoin(stash[fd], tmp);
+		tmp = ft_strjoin(stash[fd], line);
+		free(line);
+		line = tmp;
+		if (find_line(stash[fd][ft_strlen(line)]) == 0)
+			continue ;
+		else
+			break ;
+	}
+	if (read(fd, stash[fd], BUFFER_SIZE) == 0)
+		free(stash[fd]);
+	return (line);
 }
 
 #include <stdio.h>
 int	main(int ac, char **av)
 {
 	(void)ac;
-	printf("gnl -> %s", get_next_line(open(av[1], O_RDONLY)));
+	printf("gnl -> %s\n", get_next_line(open(av[1], O_RDONLY)));
+	printf("gnl -> %s\n", get_next_line(open(av[1], O_RDONLY)));
 }
+	// read(fd, stash[fd], BUFFER_SIZE);
+	// i = ft_strnlen(stash[fd], BUFFER_SIZE);
+	// line = malloc(sizeof(char) * (i + 1));
+	// if (!line)
+	// 	return (NULL);
+	// line[++i] = 0;
+	// if (stash[fd][--i] == '\n')
+	// 	line[i] = '\n';
+	// while (i-- > 0)
+	// {
+	// 	line[i] = stash[fd][i];
+	// }
+	// free(stash[fd]);
+	// return (line);
