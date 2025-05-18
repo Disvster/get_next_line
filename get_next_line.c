@@ -25,6 +25,37 @@ char	*get_next_line(int fd)
 	char		*line;
 	char		*tmp;
 
+	if (fd < 0 ||BUFFER_SIZE <= 0)
+		return (NULL);
+	if (!stash[fd])
+	 	stash[fd] = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
+	// if (!stash[fd])
+	// 	return (NULL);
+	line = NULL;
+	tmp = NULL;
+	while (1)
+	{
+		if (!stash[fd])
+			stash[fd] = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
+		if (!stash[fd] || read(fd, stash[fd], BUFFER_SIZE) == -1)
+			return (NULL);
+		stash[fd] = ft_strjoin(stash[fd], line);
+		tmp = ft_strjoin(stash[fd], line);
+		free(line);
+		line = tmp;
+		if (find_line(stash[fd][ft_strlen(line) - 1]) != 0)
+			continue ;
+		else
+		{
+			write(1, "aqui\n", 5);
+			break ;
+		}
+	}
+	if (read(fd, stash[fd], BUFFER_SIZE) == 0)
+		free(stash[fd]);
+	return (line);
+}
+
 	// tenho que alocar memoria para stash * BUFFER_SIZE 
 	// dar lhe o que ta no read * BUFFER_SIZE 
 	// strdup de stash -> line
@@ -43,34 +74,6 @@ char	*get_next_line(int fd)
 	// temos de dar free a memoria que foi alocada mas nao utilizada
 	// e so depois return (line)
 	// so damos free a stash[fd] quando EOF is reached
-
-	if (fd < 0)
-		return (NULL);
-	if (!stash[fd])
-	 	stash[fd] = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
-	// if (!stash[fd])
-	// 	return (NULL);
-	line = NULL;
-	tmp = NULL;
-	while (1)
-	{
-		if (!stash[fd])
-			tmp = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
-		if (!stash[fd] || read(fd, stash[fd], BUFFER_SIZE) == -1)
-			return (NULL);
-		stash[fd] = ft_strjoin(stash[fd], tmp);
-		tmp = ft_strjoin(stash[fd], line);
-		free(line);
-		line = tmp;
-		if (find_line(stash[fd][ft_strlen(line)]) == 0)
-			continue ;
-		else
-			break ;
-	}
-	if (read(fd, stash[fd], BUFFER_SIZE) == 0)
-		free(stash[fd]);
-	return (line);
-}
 
 #include <stdio.h>
 int	main(int ac, char **av)
