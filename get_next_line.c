@@ -19,68 +19,72 @@ int	find_line(char s)
 	return (0);
 }
 
+char	*add_mem(char *stash, size_t size)
+{
+	char	*nstash;
+	size_t	lenb;
+	
+	lenb = ft_strlen(stash);
+	nstash = ft_calloc(sizeof(char), (size + lenb + 1));
+	if (!nstash)
+		return (NULL);
+	if (stash)
+		ft_strlcpy(nstash, stash, size + lenb + 1);
+	// 	free(stash);
+	return (nstash);
+}
+
 char	*get_next_line(int fd)
 {
-	static char	*stash[1024]; // stashing the strings being read
-	char		*line;
-	char		*tmp;
+	static char	*stash[1024]; // ulimit -n command shows max fd possible
+	char		*buffer;
+	ssize_t		bread;
+	size_t		i;
 
 	if (fd < 0 ||BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!stash[fd])
-	 	stash[fd] = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
-	// if (!stash[fd])
-	// 	return (NULL);
-	line = NULL;
-	tmp = NULL;
+		stash[fd] = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
+	buffer = NULL;
 	while (1)
 	{
-		if (!stash[fd])
-			stash[fd] = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
-		if (!stash[fd] || read(fd, stash[fd], BUFFER_SIZE) == -1)
+		stash[fd] = add_mem(stash[fd], BUFFER_SIZE); // adicionamos memoria para receber read
+		bread = read(fd, stash[fd], BUFFER_SIZE); // read, var para checkar if em baixo
+		if (bread == -1 || !stash[fd])
 			return (NULL);
-		stash[fd] = ft_strjoin(stash[fd], line);
-		tmp = ft_strjoin(stash[fd], line);
-		free(line);
-		line = tmp;
-		if (find_line(stash[fd][ft_strlen(line) - 1]) != 0)
-			continue ;
-		else
+		buffer = add_mem(buffer, BUFFER_SIZE); // adiciono memoria para receber o que esta no stash
+		ft_strlcat(buffer, stash[fd], ft_strlen(buffer) + BUFFER_SIZE + 1); // recebe o stash
+		i = 0;
+		while (find_line(buffer[i]) != 1 && buffer[i]) // percorro a struing ate new line
+			i++;
+		if (buffer[i] == '\n') // if TRUE entao devolvo o que esta no buffer mais a newline
 		{
-			write(1, "aqui\n", 5);
+			char *tmp;
+			tmp = ft_substr(buffer, 0, i + 1);
+			free(buffer);
+			buffer = tmp;
 			break ;
 		}
+		else // ELSE dou free a stash e recebe novo read
+		{
+			free(stash[fd]);
+			continue ;
+		}
+		// nao estou a ler ate \0 estou a saltar os bytes lido na iteracao anterior
 	}
-	if (read(fd, stash[fd], BUFFER_SIZE) == 0)
-		free(stash[fd]);
-	return (line);
+	return (buffer);
 }
-
-	// tenho que alocar memoria para stash * BUFFER_SIZE 
-	// dar lhe o que ta no read * BUFFER_SIZE 
-	// strdup de stash -> line
-	// se line na ultima posicao for newline -> return (line)
-	// senao -> strjoin do proximo read para stash[fd]
-	// volta ao inicio do loop;
-	// 
-	// stash comeca com tamanho de buffer_size
-	// e lhe aplicado o read
-	// stash e copiado para line
-	// line so se devolve se encontrarmos linha ou EOF (read == 0)
-	// senao adiciona-se mais memoria a stash * BUFFER_SIZE 
-	// e continua o processo mas stash agora recebe um join do result do read
-	//
-	// se encontramos a newline ou o EOF antes da memoria total alocada
-	// temos de dar free a memoria que foi alocada mas nao utilizada
-	// e so depois return (line)
-	// so damos free a stash[fd] quando EOF is reached
 
 #include <stdio.h>
 int	main(int ac, char **av)
 {
 	(void)ac;
-	printf("gnl -> %s\n", get_next_line(open(av[1], O_RDONLY)));
-	printf("gnl -> %s\n", get_next_line(open(av[1], O_RDONLY)));
+	char	*line = NULL;
+	int	fd = open(av[1], O_RDONLY);
+	printf("%s", line = get_next_line(fd));
+	printf("%s", line = get_next_line(fd));
+	printf("%s", line = get_next_line(fd));
+	// printf("%s", line = get_next_line(fd));
 }
 	// read(fd, stash[fd], BUFFER_SIZE);
 	// i = ft_strnlen(stash[fd], BUFFER_SIZE);
