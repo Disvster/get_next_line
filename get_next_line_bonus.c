@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 int	find_line(char *s)
 {
@@ -35,9 +35,9 @@ char	*ft_trimstash(char *stash)
 		return (NULL);
 	len = ft_strclen(stash, '\n') + 1;
 	line = ft_calloc(sizeof(char), len + 1);
+	i = 0;
 	if (!line)
 		return (NULL);
-	i = 0;
 	while (i < len)
 	{
 		line[i] = stash[i];
@@ -55,12 +55,10 @@ void	ft_stash_copycat(char **stash, char **buffer)
 	tmp = ft_strdup(*stash);
 	if (!tmp)
 		tmp = ft_calloc(sizeof(char), 1);
-	if (!tmp)
-		return (free(*stash));
 	free(*stash);
 	*stash = ft_calloc(sizeof(char), ttlen);
 	if (!*stash)
-		return (free(tmp));
+		return ;
 	ft_strlcpy(*stash, tmp, ttlen - ft_strclen(*buffer, 0));
 	ft_strlcat(*stash, *buffer, ttlen);
 	free(*buffer);
@@ -81,19 +79,15 @@ void	ft_free_stash(char **stash, char *line)
 	}
 	flen = ft_strclen(*stash, 0) - ft_strclen(line, 0) + 1;
 	tmp = ft_strdup(*stash);
-	if (!tmp)
-		return (free(*stash), free(line));
 	free(*stash);
 	*stash = ft_calloc(sizeof(char), flen);
-	if (!*stash)
-		return (free(tmp), free(line));
 	ft_strlcpy(*stash, tmp + ft_strclen(line, 0), flen);
 	free(tmp);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	*stash[1024];
 	char		*buffer;
 	char		*line;
 	ssize_t		bread;
@@ -103,22 +97,20 @@ char	*get_next_line(int fd)
 	bread = 1;
 	line = NULL;
 	buffer = NULL;
-	while (bread > 0 && find_line(stash))
+	while (bread > 0 && find_line(stash[fd]))
 	{
 		buffer = ft_calloc(sizeof(char), BUFFER_SIZE + 1);
-		if (!buffer)
-			return (NULL);
 		bread = read(fd, buffer, BUFFER_SIZE);
 		if (bread == 0)
 			break ;
 		if (bread == -1)
-			return (ft_free_stash(&stash, NULL), free(buffer), NULL);
-		ft_stash_copycat(&stash, &buffer);
-		if (!stash)
+			return (ft_free_stash(&stash[fd], NULL), free(buffer), NULL);
+		ft_stash_copycat(&stash[fd], &buffer);
+		if (!stash[fd])
 			return (NULL);
 	}
-	line = ft_trimstash(stash);
-	ft_free_stash(&stash, line);
+	line = ft_trimstash(stash[fd]);
+	ft_free_stash(&stash[fd], line);
 	return (free(buffer), line);
 }
 
@@ -143,16 +135,16 @@ char	*get_next_line(int fd)
 // 	printf("%s", line = get_next_line(fd));
 // }
 //
-// #include <stdio.h>
-// int	main(int ac, char **av)
-// {
-// 	(void)ac;
-// 	char	*line = NULL;
-// 	int	fd = open(av[1], O_RDONLY);
-// 	while ((line = get_next_line(fd)))
-// 	{
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// 	close(fd);
-// }
+#include <stdio.h>
+int	main(int ac, char **av)
+{
+	(void)ac;
+	char	*line = NULL;
+	int	fd = open(av[1], O_RDONLY);
+	while ((line = get_next_line(fd)))
+	{
+		printf("%s", line);
+		free(line);
+	}
+	close(fd);
+}
