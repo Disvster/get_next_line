@@ -46,7 +46,7 @@ char	*ft_trimstash(char *stash)
 	return (line);
 }
 
-void	ft_stash_copycat(char **stash, char *buffer)
+void	ft_stash_copycat(char **stash, const char *buffer)
 {
 	char	*tmp;
 	size_t	ttlen;
@@ -62,6 +62,7 @@ void	ft_stash_copycat(char **stash, char *buffer)
 	ft_strlcpy(*stash, tmp, ttlen - ft_strlen(buffer));
 	ft_strlcat(*stash, buffer, ttlen);
 	free(tmp);
+	//(buffer)[0] = 0;
 }
 
 void	ft_free_stash(char **stash, char *line)
@@ -78,7 +79,7 @@ void	ft_free_stash(char **stash, char *line)
 	flen = ft_strlen(*stash) - ft_strlen(line) + 1;
 	tmp = ft_strdup(*stash);
 	free(*stash);
-	*stash = calloc(sizeof(char), flen);
+	*stash = ft_calloc(sizeof(char), flen);
 	ft_strlcpy(*stash, tmp + ft_strlen(line), flen);
 	free(tmp);
 }
