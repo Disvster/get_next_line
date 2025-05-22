@@ -56,7 +56,11 @@ void	ft_stash_copycat(char **stash, char **buffer)
 	if (!tmp)
 		tmp = ft_calloc(sizeof(char), 1);
 	if (!tmp)
-		return (free(*stash));
+	{
+		free(*stash);
+		*stash = NULL;
+		return ;
+	}
 	free(*stash);
 	*stash = ft_calloc(sizeof(char), ttlen);
 	if (!*stash)
@@ -82,11 +86,22 @@ void	ft_free_stash(char **stash, char *line)
 	flen = ft_strclen(*stash, 0) - ft_strclen(line, 0) + 1;
 	tmp = ft_strdup(*stash);
 	if (!tmp)
-		return (free(*stash), free(line));
+	{
+		free(*stash);
+		*stash = NULL;
+		free(line);
+		line = NULL;
+		return ;
+	}
 	free(*stash);
 	*stash = ft_calloc(sizeof(char), flen);
 	if (!*stash)
-		return (free(tmp), free(line));
+	{
+		free(tmp);
+		free(line);
+		line = NULL;
+		return ;
+	}
 	ft_strlcpy(*stash, tmp + ft_strclen(line, 0), flen);
 	free(tmp);
 }

@@ -135,16 +135,16 @@ char	*get_next_line(int fd)
 // 	printf("%s", line = get_next_line(fd));
 // }
 //
-#include <stdio.h>
-int	main(int ac, char **av)
-{
-	(void)ac;
-	char	*line = NULL;
-	int	fd = open(av[1], O_RDONLY);
-	while ((line = get_next_line(fd)))
-	{
-		printf("%s", line);
-		free(line);
-	}
-	close(fd);
-}
+// #include <stdio.h>
+// int	main(int ac, char **av)
+// {
+// 	(void)ac;
+// 	char	*line = NULL;
+// 	int	fd = open(av[1], O_RDONLY);
+// 	while ((line = get_next_line(fd)))
+// 	{
+// 		printf("%s", line);
+// 		free(line);
+// 	}
+// 	close(fd);
+// }
