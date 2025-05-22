@@ -30,6 +30,8 @@ char	*ft_strdup(const char *s)
 	size_t	i;	
 	size_t	len;
 
+	if (!s)
+		return (NULL);
 	i = 0;
 	len = ft_strlen(s);
 	dup = (char *)malloc(sizeof(char) * (len + 1));
@@ -44,7 +46,7 @@ char	*ft_strdup(const char *s)
 	return (dup);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin_f(char *s1, char *s2)
 {
 	size_t	i;
 	size_t	ltotal;
@@ -157,4 +159,37 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 	}
 	dst[i] = '\0';
 	return (ft_strlen(src));
+}
+
+size_t	ft_strclen(const char *s, int c)
+{
+	size_t	i;
+
+	if (!s)
+		return (0);
+	i = 0;
+	while (s[i] && s[i] != (char)c)
+		i++;
+	return (i);
+}
+char	*ft_trimbuffer(char *buf)
+{
+	char	*nbuf;
+	size_t	len;
+	size_t	i;
+
+	if (!buf)
+		return (NULL);
+	len = ft_strclen(buf, '\n');
+	nbuf = ft_calloc(sizeof(char), len + 1);
+	if (!nbuf)
+		return (free(buf), NULL);
+	i = 0;
+	while (i <= len)
+	{
+		nbuf[i] = buf[i];
+		i++;
+	}
+	free(buf);
+	return (nbuf);
 }
