@@ -127,9 +127,9 @@ char	*ft_free_stash(char **stash, char **line)
 	char	*n_stash;
 	size_t	flen;
 
-	// if (!*stash && !*line)
-	// 	return (NULL);
-	if (!*line && *stash)
+	if (!line)
+		return (NULL);
+	if ((!*line || !line) && *stash)
 		return (free(*stash), *stash = NULL);
 	if (!*stash  && *line)
 		return (free(*line), *line = NULL);
@@ -167,7 +167,7 @@ char	*get_next_line(int fd)
 		if (bread == 0)
 			break ;
 		if (bread == -1)
-			return (/*ft_free_stash(&stash, NULL)*, */free(buffer), NULL);
+			return (free(buffer), ft_free_stash(&stash, NULL));
 		stash = ft_stash_copycat(stash, &buffer);
 		if (!stash)
 			return (NULL);
@@ -175,6 +175,12 @@ char	*get_next_line(int fd)
 	line = ft_trimstash(stash);
 	return (free(buffer), ft_free_stash(&stash, &line));
 }
+	// if (!stash)
+	// {
+	// 	stash = ft_calloc(sizeof(char), 1);
+	// 	if (!stash)
+	// 		return (NULL);
+	// }
 		
 		// if (bread <= 0)
 		// 	break ;
@@ -207,16 +213,31 @@ char	*get_next_line(int fd)
 // 	printf("%s", line = get_next_line(fd));
 // }
 //
+//
 // #include <stdio.h>
+// #include <unistd.h>
+// void	ft_putstr(char *line)
+// {
+// 	write(1, line, ft_strclen(line, 0));
+// }
+//
 // int	main(int ac, char **av)
 // {
 // 	(void)ac;
 // 	char	*line = NULL;
 // 	int	fd = open(av[1], O_RDONLY);
+// 	line = get_next_line(fd);
+// 		ft_putstr(line);
+// 	free(line);
+// 	close(fd);
+// 	open(av[1], O_RDONLY);
 // 	while ((line = get_next_line(fd)))
 // 	{
-// 		printf("%s", line);
+// 		ft_putstr(line);
 // 		free(line);
 // 	}
+// 	//line = get_next_line(fd);
+// 	printf("%s", line);
+// 	free(line);
 // 	close(fd);
 // }
