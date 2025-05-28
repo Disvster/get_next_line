@@ -148,30 +148,30 @@ char	*get_next_line(int fd)
 // 	}
 // 	close(fd);
 // }
-#include <stdio.h>
-#include <unistd.h>
-void	ft_putstr(char *line)
-{
-	write(1, line, ft_strclen(line, 0));
-}
-
-int	main(int ac, char **av)
-{
-	(void)ac;
-	char	*line = NULL;
-	int	fd = open(av[1], O_RDONLY);
-	line = get_next_line(fd);
-		ft_putstr(line);
-	free(line);
-	close(fd);
-	open(av[1], O_RDONLY);
-	while ((line = get_next_line(fd)))
-	{
-		ft_putstr(line);
-		free(line);
-	}
-	//line = get_next_line(fd);
-	printf("%s", line);
-	free(line);
-	close(fd);
-}
+// #include <stdio.h>
+// #include <unistd.h>
+// void	ft_putstr(char *line)
+// {
+// 	write(1, line, ft_strclen(line, 0));
+// }
+//
+// int	main(int ac, char **av)
+// {
+// 	(void)ac;
+// 	char	*line = NULL;
+// 	int	fd = open(av[1], O_RDONLY);
+// 	line = get_next_line(fd);
+// 		ft_putstr(line);
+// 	free(line);
+// 	close(fd);
+// 	open(av[1], O_RDONLY);
+// 	while ((line = get_next_line(fd)))
+// 	{
+// 		ft_putstr(line);
+// 		free(line);
+// 	}
+// 	//line = get_next_line(fd);
+// 	printf("%s", line);
+// 	free(line);
+// 	close(fd);
+// }

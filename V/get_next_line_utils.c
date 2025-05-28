@@ -12,6 +12,17 @@
 
 #include "get_next_line.h"
 
+size_t	ft_strclen(const char *s, int c)
+{
+	size_t	i;
+
+	if (!s)
+		return (0);
+	i = 0;
+	while (s[i] && s[i] != (char)c)
+		i++;
+	return (i);
+}
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
@@ -38,18 +49,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	}
 	scat[i] = '\0';
 	return (scat);
-}
-
-size_t	ft_strclen(const char *s, int c)
-{
-	size_t	i;
-
-	if (!s)
-		return (0);
-	i = 0;
-	while (s[i] && s[i] != (char)c)
-		i++;
-	return (i);
 }
 
 char	*ft_strdup(const char *s)
@@ -92,40 +91,26 @@ char	*ft_calloc(size_t nmemb, size_t size)
 	return (arr);
 }
 
-size_t	ft_strlcat(char *dst, const char *src, size_t size)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	size_t	src_len;
-	size_t	dst_len;
+	char	*sub;
 	size_t	i;
 
-	if (!dst && !size)
-		return (0);
-	dst_len = ft_strclen(dst, 0);
-	src_len = ft_strclen(src, 0);
-	if (size == 0 || dst_len >= size)
-		return (src_len + size);
+	if (!s)
+		return (NULL);
+	if (start > ft_strclen(s, 0))
+		return (ft_strdup(""));
+	if (len > ft_strclen(s + start, 0))
+		len = ft_strclen(s + start, 0);
+	sub = (char *)malloc(sizeof(char) * (len + 1));
+	if (!sub)
+		return (NULL);
 	i = 0;
-	while (src[i] && (i + dst_len + 1) < size)
+	while (i < len)
 	{
-		dst[dst_len + i] = src[i];
+		sub[i] = s[i + start];
 		i++;
 	}
-	dst[dst_len + i] = '\0';
-	return (src_len + dst_len);
-}
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t size)
-{
-	size_t	i;
-
-	i = 0;
-	if (!size)
-		return (ft_strclen(src, 0));
-	while (src[i] && i + 1 < size)
-	{
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-	return (ft_strclen(src, 0));
+	sub[i] = '\0';
+	return (sub);
 }
