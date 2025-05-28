@@ -142,6 +142,30 @@ char	*get_next_line(int fd)
 // {
 // 	(void)ac;
 // 	char	*line = NULL;
+// 	// (void)av;
+// 	// int	fd = -1;/*open(av[1], O_RDONLY);*/
+// 	int	fd = open(av[1], O_RDONLY);
+// 	printf("1 -> %s\n", line = get_next_line(fd));
+// 	free(line);
+// 	printf("2 -> %s\n", line = get_next_line(fd));
+// 	free(line);
+// 	close(fd);
+// 	printf("3 -> %s\n", line = get_next_line(-1));
+// 	free(line);
+// 	fd = open(av[1], O_RDONLY);
+// 	printf("4 -> %s\n", line = get_next_line(fd));
+// 	free(line);
+// 	printf("5 -> %s\n", line = get_next_line(fd));
+// 	free(line);
+// 	printf("6 -> %s\n", line = get_next_line(fd));
+// 	printf("7 -> %s\n", line = get_next_line(fd));
+// 	printf("8 -> %s\n", line = get_next_line(fd));
+// }
+// #include <stdio.h>
+// int	main(int ac, char **av)
+// {
+// 	(void)ac;
+// 	char	*line = NULL;
 // 	int	fd = open(av[1], O_RDONLY);
 // 	printf("%s", line = get_next_line(fd));
 // 	free(line);

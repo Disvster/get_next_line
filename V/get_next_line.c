@@ -74,30 +74,7 @@ char	*ft_stash_copycat(char *stash, char **buffer)
 	*buffer = NULL;
 	return (tmp);
 }
-// {
-// 	char	*tmp;
-//
-// 	if (stash)
-// 	{
-// 		tmp = ft_strdup(stash);
-// 		free(stash);
-// 		stash = NULL;
-// 	}
-// 	else
-// 	{
-// 		tmp = ft_calloc(sizeof(char), 1);
-// 		stash = NULL;
-// 	}
-// 	if (!tmp)
-// 		return (NULL);
-// 	stash = ft_strjoin(tmp, *buffer);
-// 	free(*buffer);
-// 	*buffer = NULL;
-// 	free(tmp);
-// 	if (!stash)
-// 		return (NULL);
-// 	return (stash);
-// }
+
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*sub;
@@ -128,10 +105,12 @@ char	*ft_free_stash(char **stash, char **line)
 	size_t	flen;
 
 	if (!line)
+	{
+		if (*stash)
+			return (free(*stash), *stash = NULL);
 		return (NULL);
-	if ((!*line || !line) && *stash)
-		return (free(*stash), *stash = NULL);
-	if (!*stash  && *line)
+	}
+	if (!*stash && *line)
 		return (free(*line), *line = NULL);
 	flen = ft_strclen(*stash, 0) - ft_strclen(*line, 0);
 	n_stash = ft_substr(*stash, ft_strclen(*line, 0), flen);
@@ -154,7 +133,7 @@ char	*get_next_line(int fd)
 	ssize_t		bread;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
+		return (ft_free_stash(&stash, NULL));
 	bread = 1;
 	line = NULL;
 	buffer = NULL;
@@ -167,13 +146,17 @@ char	*get_next_line(int fd)
 		if (bread == 0)
 			break ;
 		if (bread == -1)
-			return (free(buffer), ft_free_stash(&stash, NULL));
+			return (free(buffer), NULL);
 		stash = ft_stash_copycat(stash, &buffer);
 		if (!stash)
 			return (NULL);
 	}
 	line = ft_trimstash(stash);
-	return (free(buffer), ft_free_stash(&stash, &line));
+	free(buffer);
+	buffer = NULL;
+	if (!line)
+		return (ft_free_stash(&stash, NULL));
+	return (ft_free_stash(&stash, &line));
 }
 	// if (!stash)
 	// {
@@ -198,19 +181,21 @@ char	*get_next_line(int fd)
 // 	// (void)av;
 // 	// int	fd = -1;/*open(av[1], O_RDONLY);*/
 // 	int	fd = open(av[1], O_RDONLY);
-// 	printf("%s", line = get_next_line(fd));
+// 	printf("1 -> %s\n", line = get_next_line(fd));
 // 	free(line);
-// 	printf("%s", line = get_next_line(fd));
+// 	printf("2 -> %s\n", line = get_next_line(fd));
 // 	free(line);
-// 	printf("%s", line = get_next_line(fd));
+// 	close(fd);
+// 	printf("3 -> %s\n", line = get_next_line(-1));
 // 	free(line);
-// 	printf("%s", line = get_next_line(fd));
+// 	fd = open(av[1], O_RDONLY);
+// 	printf("4 -> %s\n", line = get_next_line(fd));
 // 	free(line);
-// 	printf("%s", line = get_next_line(fd));
+// 	printf("5 -> %s\n", line = get_next_line(fd));
 // 	free(line);
-// 	printf("%s", line = get_next_line(fd));
-// 	printf("%s", line = get_next_line(fd));
-// 	printf("%s", line = get_next_line(fd));
+// 	printf("6 -> %s\n", line = get_next_line(fd));
+// 	printf("7 -> %s\n", line = get_next_line(fd));
+// 	printf("8 -> %s\n", line = get_next_line(fd));
 // }
 //
 //
@@ -220,7 +205,7 @@ char	*get_next_line(int fd)
 // {
 // 	write(1, line, ft_strclen(line, 0));
 // }
-//
+
 // int	main(int ac, char **av)
 // {
 // 	(void)ac;
