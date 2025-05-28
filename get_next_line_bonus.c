@@ -91,13 +91,10 @@ char	*ft_free_stash(char **stash, char *line, ssize_t bread)
 	}
 	flen = ft_strclen(*stash, 0) - ft_strclen(line, 0);
 	n_stash = ft_substr(*stash, ft_strclen(line, 0), flen);
-	if (!n_stash)
-	{
-		free(*stash);
-		*stash = NULL;
-		return (free(line), NULL);
-	}
 	free(*stash);
+	*stash = NULL;
+	if (!n_stash)
+		return (free(line), NULL);
 	*stash = n_stash;
 	return (line);
 }
