@@ -59,7 +59,12 @@ char	*ft_stash_copycat(char *stash, char **buffer)
 	buffer_len = ft_strclen(*buffer, 0);
 	tmp = ft_calloc(sizeof(char), stash_len + buffer_len + 1);
 	if (!tmp)
-		return (free(buffer), *buffer = NULL, NULL);
+	{
+		if (*buffer)
+			free(*buffer);
+		*buffer = NULL;
+		return (NULL);
+	}
 	i = -1;
 	if (stash)
 	{
@@ -99,7 +104,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (sub);
 }
 
-char	*ft_free_stash(char **stash, char **line)
+char	*ft_free_stash(char **stash, char *line)
 {
 	char	*n_stash;
 	size_t	flen;
@@ -107,22 +112,25 @@ char	*ft_free_stash(char **stash, char **line)
 	if (!line)
 	{
 		if (*stash)
-			return (free(*stash), *stash = NULL);
+		{
+			free(*stash);
+			*stash = NULL;
+		}
 		return (NULL);
 	}
-	if (!*stash && *line)
-		return (free(*line), *line = NULL);
-	flen = ft_strclen(*stash, 0) - ft_strclen(*line, 0);
-	n_stash = ft_substr(*stash, ft_strclen(*line, 0), flen);
+	if (!*stash && line)
+		return (free(line), NULL);
+	flen = ft_strclen(*stash, 0) - ft_strclen(line, 0);
+	n_stash = ft_substr(*stash, ft_strclen(line, 0), flen);
 	if (!n_stash)
 	{
 		free(*stash);
 		*stash = NULL;
-		return (free(*line), *line = NULL);
+		return (free(line), NULL);
 	}
 	free(*stash);
 	*stash = n_stash;
-	return (*line);
+	return (line);
 }
 
 char	*get_next_line(int fd)
@@ -141,37 +149,36 @@ char	*get_next_line(int fd)
 	{
 		buffer = ft_calloc(sizeof(char), BUFFER_SIZE + 1);
 		if (!buffer)
-			return (NULL);
+			return (ft_free_stash(&stash, NULL));
 		bread = read(fd, buffer, BUFFER_SIZE);
 		if (bread == 0)
 			break ;
 		if (bread == -1)
-			return (free(buffer), NULL);
+			return (free(buffer), ft_free_stash(&stash, NULL));
 		stash = ft_stash_copycat(stash, &buffer);
 		if (!stash)
 			return (NULL);
 	}
-	line = ft_trimstash(stash);
 	free(buffer);
 	buffer = NULL;
+	line = ft_trimstash(stash);
 	if (!line)
 		return (ft_free_stash(&stash, NULL));
-	return (ft_free_stash(&stash, &line));
+	return (ft_free_stash(&stash, line));
 }
-	// if (!stash)
-	// {
-	// 	stash = ft_calloc(sizeof(char), 1);
-	// 	if (!stash)
-	// 		return (NULL);
-	// }
-		
-		// if (bread <= 0)
-		// 	break ;
-// 	OU
-		// if (bread == 0)
-		// 	break ;
-		// if (bread == -1)
-		// 	return (/*ft_free_stash(&stash, NULL)*, */free(buffer), NULL);
+
+#include <stdio.h>
+#include <string.h>
+int	main(int ac, char **av)
+{
+	(void)ac;
+	int	fd = open(av[1], O_RDONLY);
+	char *line = get_next_line(fd);
+	printf("1char.txt\nstrcmp -> %i\n", strcmp(line, "0"));
+	free(line);
+	close(fd);
+	return (0);
+}
 
 // #include <stdio.h>
 // int	main(int ac, char **av)
